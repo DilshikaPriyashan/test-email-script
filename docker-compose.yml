@@ -1,0 +1,79 @@
+services:
+  transaction-email-sys-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        uid: ${UID}
+    image: transaction-email-sys-app:latest
+    container_name: transaction-email-sys-app-container
+    volumes:
+      - ./:/var/www/html:delegated
+      - ./docker-configs/php.ini:/usr/local/etc/php/php.ini:ro
+    ports:
+      - 8001:80
+      - 5173:5173 #Vite Port
+    depends_on:
+      - transaction-email-sys-mariadb
+      - transaction-email-sys-redis-server
+
+  transaction-email-sys-redis-server:
+    image: "redis:alpine"
+    command: redis-server
+    container_name: transaction-email-sys-redis-server-container
+    ports:
+      - "6379:6379"
+
+  transaction-email-sys-mariadb:
+    image: mariadb:11.2.2
+    container_name: transaction-email-sys-mariadb
+    command:
+      [
+        '--default-time-zone=+00:00',
+        '--default-authentication-plugin=mysql_native_password'
+      ]
+    ports:
+      - 3307:3306
+    environment:
+      - MARIADB_ROOT_PASSWORD=root
+    volumes:
+      - transaction-email-sys-mariadb-data:/var/lib/mysql
+
+  transaction-email-sys-phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: transaction-email-sys-phpmyadmin
+    environment:
+      - PMA_HOST=transaction-email-sys-mariadb
+      - PMA_USER=root
+      - PMA_PASSWORD=root
+      - UPLOAD_LIMIT=120M
+    ports:
+      - "8002:80"
+    depends_on:
+      - transaction-email-sys-mariadb
+
+  transaction-email-sys-docs:
+    image: nginx
+    container_name: transaction-email-sys-docs-container
+    ports:
+      - 8004:80
+    volumes:
+      - ./docs:/usr/share/nginx/html
+  transaction-email-sys-mailpit:
+    image: axllent/mailpit
+    container_name: mailpit
+    restart: unless-stopped
+    volumes:
+      - transaction-email-sys-mailpit-data:/data:/data
+    ports:
+      - 8025:8025
+      - 1025:1025
+    environment:
+      MP_MAX_MESSAGES: 5000
+      MP_DATABASE: /data/mailpit.db
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+
+volumes:
+  transaction-email-sys-mariadb-data:
+  transaction-email-sys-mailpit-data:

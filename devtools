@@ -1,0 +1,16 @@
+#!/bin/sh
+
+gum style \
+	--foreground 212 --border-foreground 212 --border double \
+	--align center --width 50 --margin "1 2" --padding "2 4" \
+	'Welcome to Developer Toolbox' 'Developed by Sanmark Solutions!'
+
+CHOICE=$(gum choose "Format Code Base" "Commit Changes" )
+
+if [ "$CHOICE" = "Format Code Base" ]
+then
+    npx blade-formatter --write resources/**/*.blade.php && npx prettier --write './**/*.{css,js,html}' && ./vendor/bin/pint -v
+elif [ "$CHOICE" = "Commit Changes" ]
+then
+    npx better-commits
+fi
