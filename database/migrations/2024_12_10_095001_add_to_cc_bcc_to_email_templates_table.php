@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('email_templates', function (Blueprint $table) {
-            $table->json('to')->default('[]');
-            $table->json('cc')->default('[]');
-            $table->json('bcc')->default('[]');
+            $table->json('to');
+            $table->json('cc');
+            $table->json('bcc');
         });
     }
 

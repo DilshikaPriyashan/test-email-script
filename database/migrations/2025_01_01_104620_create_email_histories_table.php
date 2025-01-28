@@ -21,10 +21,10 @@ return new class extends Migration
             $table->foreignIdFor(Team::class)->constrained()->cascadeOnDelete();
             $table->foreignIdFor(APIKey::class, 'sended_via')->nullable();
             $table->string('status')->default('waiting');
-            $table->json('to')->default('[]');
-            $table->json('cc')->default('[]');
-            $table->json('bcc')->default('[]');
-            $table->json('history')->default('[]');
+            $table->json('to');
+            $table->json('cc');
+            $table->json('bcc');
+            $table->json('history');
             $table->timestamps();
         });
     }

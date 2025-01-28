@@ -18,8 +18,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('subject');
             $table->string('api_ref');
-            $table->json('attributes')->default('[]');
-            $table->longText('content')->default('');
+            $table->json('attributes');
+            $table->longText('content');
             $table->enum('auth_mechanism', array_column(EmailAuthMethods::cases(), 'value'))->default(EmailAuthMethods::NONE->value);
             $table->foreignIdFor(Team::class)->constrained()->cascadeOnDelete();
             $table->timestamps();
